@@ -82,12 +82,17 @@ chaque pièce. En ligne de commande :
 xvfb-run -a openscad -o /tmp/assembly.png --imgsize 1100,850 --autocenter --viewall \
   -D 'part="assembly"' scad/boitier_8_sas_v2.scad
 
+# vue éclatée (amplitude réglable via explode=60)
+xvfb-run -a openscad -o /tmp/exploded.png --autocenter --viewall \
+  -D 'part="exploded"' scad/boitier_8_sas_v2.scad
+
 # export STL d'une pièce
 xvfb-run -a openscad -o stl/lid.stl -D 'part="lid"' scad/boitier_8_sas_v2.scad
 ```
 
-`part` ∈ `assembly, front, rear, left, right, bottom, top, shelf, lid, strut,
-corner_post, fan_guard, grommet_ring, atx_bridge, box_foot`.
+`part` ∈ `assembly, exploded, front, rear, left, right, bottom, top, shelf,
+lid, strut, corner_post, fan_guard, atx_bridge, box_foot`.
+Les 13 STL sont déjà exportés dans `stl/` (dimensions vérifiées).
 
 ## Points d'attention fabrication
 
