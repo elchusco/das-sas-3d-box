@@ -16,8 +16,9 @@ alimenté par un **Corsair CX430**. Impression 3D en panneaux segmentés.
 | Analyse du besoin (8× SAS, refroidissement, PSU ATX) | ✅ |
 | Collecte des specs officielles (SFF-8301, ES.3, CX430) | ✅ |
 | Audit v1 (`scad/boitier_8_sas_sata_atx_v1.scad`) | ✅ 3 défauts bloquants trouvés |
-| Conception v2 (disques sur tranche, fans push, PSU arrière) | 🔨 géométrie principale validée |
-| Finitions v2 (joints, grilles, anti-vibration) | ⏳ voir [TODO.md](TODO.md) |
+| Conception v2 (disques sur tranche, fans push, PSU arrière) | ✅ |
+| **v2.3** (plateau 1 m² : panneaux monoblocs, inserts Ruthex, Add2PSU) | ✅ géométrie validée |
+| Finitions (grilles, anti-vibration, fan_guard, STL) | ⏳ voir [TODO.md](TODO.md) |
 | Impression / assemblage / test | ⬜ |
 
 ## Architecture retenue (v2)
@@ -56,10 +57,14 @@ alimenté par un **Corsair CX430**. Impression 3D en panneaux segmentés.
 ```
 scad/
   boitier_8_sas_sata_atx_v1.scad   # v1 originale (archivée, cf. audit docs/audit-v1.md)
-  boitier_8_sas_v2.scad            # v2 courante (disques sur tranche)
+  boitier_8_sas_v2.scad            # v2.3 courante (monoblocs, Ruthex, Add2PSU)
 docs/
   audit-v1.md                      # audit de la v1 (conflits trouvés)
   conformite.md                    # tableau besoin ↔ mesure ↔ statut
+  components/                      # composants externes intégrés
+    add2psu.md                     #   module démarrage auto (15,19 €, lot de 2)
+    add2psu_dkey_70x30mm.jpg       #   photo produit
+    inserts-ruthex.md              #   inserts laiton M3/M4 (perçages, plan)
   sff8301-mounting-wdc.pdf         # positions de vis SFF-8301 (WDC/SNIA)
   seagate-es3-product-manual.pdf   # manuel ES.3 (dimensions Fig.12)
 renders/                           # rendus PNG (assembly, faces, lid…)
@@ -86,11 +91,17 @@ corner_post, fan_guard, grommet_ring, atx_bridge, box_foot`.
 
 ## Points d'attention fabrication
 
-- **Plateau d'impression** : paramètre `bed_max = 220` (à ajuster) — tous les
-  panneaux sont pré-découpés en quarts avec ergots/slots.
-- **Impression plate** : tous les panneaux s'impriment à plat (extrusion 4 mm).
-- **Collage** : joints ergots+slots + colle (les panneaux ne sont pas vissés
-  entre eux ; seuls les disques, fans et le PSU sont démontables).
-- **ATX sans carte mère** : pont PS_ON↔COM obligatoire (pièce `atx_bridge` ou
-  pont soudé), l'interrupteur secteur du CX430 sert d'interrupteur général.
-- **Limites SCAD v2 connues** : voir [TODO.md](TODO.md) avant impression.
+- **Plateau d'impression : 1 m²** → `bed_max = 1000` : tous les panneaux
+  s'impriment **monoblocs** (plus de segmentation).
+- **Impression plate** : tous les panneaux s'impriment à plat (extrusion 4 mm,
+  lid/étagère 3.2 mm).
+- **Assemblage par inserts Ruthex** : M4×8.1 dans les jetées d'angle (poches
+  ⌀5.6 × 9.1), M3×5.7 dans les struts et supports fins — voir
+  [docs/components/inserts-ruthex.md](docs/components/inserts-ruthex.md).
+  Les vis de **disques restent en 6-32 UNC × 1/4"** directes dans le lid
+  (standard impérial des trous HDD, pas d'insert).
+- **Démarrage automatique** : module **Add2PSU** (~15 €) — allumer la tour
+  démarre le DAS. Détails + référence + emplacement :
+  [docs/components/add2psu.md](docs/components/add2psu.md). Le pont `atx_bridge`
+  imprimé reste la solution de secours.
+- **Limites connues** : voir [TODO.md](TODO.md) avant impression.

@@ -1,6 +1,8 @@
 /*
 Boitier DAS 8x 3.5" SAS (Seagate Constellation ES.3) + ATX (Corsair CX430)
-v2.2 — disques SUR TRANCHE, 2 fans 120 push sur face avant, PSU arriere-bas.
+v2.3 — disques SUR TRANCHE, 2 fans 120 push sur face avant, PSU arriere-bas.
+PANNEAUX MONOBLOCS (plateau 1 m^2, bed_max=1000) + inserts Ruthex + Add2PSU.
+
 Unites : mm. Repere monde : X (largeur 0..282), Y (prof. 0..360), Z (haut 0..260).
 
 REFERENCES officielles :
@@ -9,6 +11,9 @@ REFERENCES officielles :
    A10=6.35 de la face PCB. Penetration vis 2.39..3.56 mm -> plaques 3.2 mm.
  - ES.3 ST4000NM0023 : conforme SFF-8301 (Fig.12 manuel Seagate).
  - CX430 : 150 x 86 x 140. Fan 120 : ⌀114, carre de fixation 105, M4.
+ - Add2PSU : 70 x 30 mm, 4 trous ⌀3 entraxe ~64 x ~24 (docs/components/add2psu.md)
+ - Inserts Ruthex : M4x8.1 -> trou ⌀5.6 prof 9 ; M3x5.7 -> trou ⌀4.0 prof 7
+   (docs/components/inserts-ruthex.md)
 
 LAYOUT (monde) :
  - Cage : 8 disques pitch 33.1 ; x 12.1..269.9 ; y 48..195 (connecteurs a 195) ;
@@ -17,11 +22,11 @@ LAYOUT (monde) :
  - Fans 120 : y 4..29 (collés a la face avant, cote interieur),
    centres (83,163) et (205,163) en (X,Z).
  - PSU : x 66..216, y 216..356, z 16..102 (pieds 12 mm), IEC a l'arriere.
- - Grommets SAS ⌀36 : arriere, x 78 / 205, z 158.
+ - Add2PSU : fond, x 24..94, y 240..270 (support 4 trous M3 insert).
+ - Grommets SAS ⌀36 : arriere, x 78 / 205, z 158 + passe-cable Molex ⌀12 x 250.
  - Flux : grille avant -> fans -> 7 canaux 7 mm -> plenum arriere -> grilles.
- - Demarrage ATX : PS_ON ponte (piece atx_bridge), interrupteur secteur ON/OFF.
+ - Demarrage ATX : Add2PSU (auto) ou atx_bridge (pont fixe), cf. docs.
 
-IMPRESSION : segments <= bed_max (defaut 220). Joints : ergots+slots, colles.
 Parts : assembly, front, rear, left, right, bottom, top, shelf, lid, strut,
         corner_post, fan_guard, grommet_ring, atx_bridge, box_foot
 */
@@ -37,11 +42,17 @@ ts = 3.2;    // etagere / lid
 iw = W-2*t;  // 274
 id = D-2*t;  // 352
 ih = H-2*t;  // 252
-bed_max = 220;
+bed_max = 1000;    // plateau 1 m^2 : panneaux monoblocs
 clr = 0.3;
-m4_pilot = 3.3;   // pilote autotaraudeuse M4
-m4_clear = 4.3;   // passage M4
-m632     = 3.9;   // passage vis 6-32 (⌀3.81 filet ext. -> jeu)
+
+/* visserie */
+m4_pilot = 3.3;    // pilote autotaraudeuse M4 (reliqueat)
+m4_clear = 4.3;    // passage M4 (panneau perce, insert dans le poteau)
+ruthex_m4 = 5.6;   // trou plastique insert Ruthex M4x8.1
+ruthex_m4_depth = 9.1;   // L 8.1 + 1
+ruthex_m3 = 4.0;   // trou plastique insert Ruthex M3x5.7
+ruthex_m3_depth = 6.7;   // L 5.7 + 1
+m632     = 3.9;    // passage vis 6-32 (disques)
 
 /* disques (SFF-8301) */
 n = 8;
@@ -73,304 +84,195 @@ fan_cz = 163;          // monde Z
 psu_w=150; psu_h=86; psu_d=140;
 psu_x0=66; psu_y0=216; psu_z0=16;
 
-/* grommets SAS */
-grom_d=36; grom_x=[78,205]; grom_z=158;
+/* Add2PSU (70 x 30, trous ⌀3 entraxe 64 x 24) */
+a2p_l=70; a2p_w=30; a2p_x=24; a2p_y=240;   // coin (monde), sur le fond
+a2p_hole_dx=64; a2p_hole_dy=24; a2p_hole_d=3.2;
 
-/* segmentation : joints (monde) */
-seam_x=150; seam_y=180; seam_z=126+4;   // 130 : ly=126
-lap=12;       // recouvrement ergots (hors bed_max, joint colle)
+/* grommets SAS + passe-cable Molex (panneau arriere) */
+grom_d=36; grom_x=[78,205]; grom_z=158;
+molex_d=12; molex_x=141; molex_z=200;      // entre les 2 grommets, plus haut
 
 /* ================= HELPERS ================= */
 module pilot(d=m4_pilot,h=12) cylinder(h=h,d=d);
 module clrh(d=m4_clear,h=12) cylinder(h=h,d=d);
+module rtx4(h=ruthex_m4_depth) cylinder(h=h,d=ruthex_m4);  // pour insert M4
+module rtx3(h=ruthex_m3_depth) cylinder(h=h,d=ruthex_m3);  // pour insert M3
 module slab(w,h,th=t) linear_extrude(height=th) offset(r=3) offset(delta=-3)
     square([w,h]);
-module tab2d() square([12,6]);                 // ergot (12x6)
-module slot2d() square([12+clr,6+clr]);        // slot
 
-/* ================= FACE AVANT =================
-   local : lx=Xm-4 (0..274), ly=Zm-4 (0..252). decoupes lx@144, ly@86.
-   fans : centres (79,159)/(201,159) locales. */
-module front_A1() {          // x 4..148, z 4..90
-    slab(144,86);
-}
-module front_A2() {          // x 4..148, z 90..256
+/* ================= FACE AVANT (monobloc 274 x 252) =================
+   local : lx=Xm-4 (0..274), ly=Zm-4 (0..252).
+   fans : centres (79,159)/(201,159) locales ; ouverture grille (bord a bord) */
+module front() {
     difference() {
-        union() {
-            slab(144,166);
-            translate([144,30,0]) linear_extrude(t) tab2d();
-            translate([144,120,0]) linear_extrude(t) tab2d();
+        slab(iw, ih);
+        // decoupes fans + fixations
+        for (cx=[79, 201]) {
+            translate([cx,159,-1]) linear_extrude(t+2) circle(d=fan_cut);
+            for (dx=[-52.5,52.5], dz=[-52.5,52.5])
+                translate([cx+dx,159+dz,-1]) linear_extrude(t+2)
+                    circle(d=fan_screw);
         }
-        translate([79,159,-1]) linear_extrude(t+2) circle(d=fan_cut);
-        for (dx=[-52.5,52.5], dz=[-52.5,52.5])
-            translate([79+dx,159+dz,-1]) linear_extrude(t+2) circle(d=fan_screw);
-        // pilotes poteaux (monde 16/16 et 16/244 -> local 12/12, 12/240)
-        for (p=[[12,12],[12,240]]) translate(p) pilot();
+        // trous inserts M4 (vers jetees : monde 16/16, 16/244, 266/16, 266/244)
+        for (p=[[12,12],[12,240],[262,12],[262,240]])
+            translate(p) clrh(d=m4_clear);
+        // trous inserts M4 milieu de bord
+        for (p=[[137,12],[137,240]]) translate(p) clrh(d=m4_clear);
     }
+    // barreaux de grille : verticaux entre les 2 fans + traverses horizontales
+    for (x=[fop_x0() : 14 : fop_x1()]) translate([x-3, fop_y0()+4, 0])
+        cube([6, fop_y1()-fop_y0()-8, t]);
+    // traverses horizontales
+    translate([fop_x0()+2, fop_y0()+2, 0]) cube([fop_x1()-fop_x0()-4, 6, t]);
+    translate([fop_x0()+2, fop_y1()-8, 0]) cube([fop_x1()-fop_x0()-4, 6, t]);
 }
-module front_B1() {          // x 148..278, z 4..90
-    difference() {
-        slab(130,86);
-        for (p=[30,120]) translate([-2,p-2]) linear_extrude(t) slot2d();
-        translate([118,12]) pilot();
-    }
-}
-module front_B2() {          // x 148..278, z 90..256
-    difference() {
-        slab(130,166);
-        translate([57,159,-1]) linear_extrude(t+2) circle(d=fan_cut);
-        for (dx=[-52.5,52.5], dz=[-52.5,52.5])
-            translate([57+dx,159+dz,-1]) linear_extrude(t+2) circle(d=fan_screw);
-        for (p=[30,120]) translate([-2,p-2]) linear_extrude(t) slot2d();
-        for (p=[[118,12],[118,240]]) translate(p) pilot();
-    }
-}
-module front_bars() {        // barreaux grille (z-fight evite : dans l'ouverture)
-    // verticals
-    for (x=[16:14:126]) translate([x,92]) cube([6,72,3]);
-    // horizontaux
-    for (z=[96:14:222]) translate([10,z]) cube([258,6,3]);
-}
+function fop_x0() = fan_cx[0]-fan_side/2-6;   // 17
+function fop_x1() = fan_cx[1]+fan_side/2+6;   // 271
+function fop_y0() = fan_cz-fan_side/2-6;      // 97
+function fop_y1() = fan_cz+fan_side/2+6;      // 229
 
-/* ================= FACE ARRIERE =================
-   local : lx=Xm-4, ly=Zm-4. decoupes lx@144, ly@126.
+/* ================= FACE ARRIERE (monobloc) =================
+   local : lx=Xm-4, ly=Zm-4.
    PSU cutout : monde (65.5..216.5, 15.5..102.5) -> local (61.5..212.5, 11.5..98.5)
-   grommets : monde (78/205,158) -> local (74/201,154) */
-module rear_A1() {
+   grommets : monde (78/205, 158) -> local (74/201, 154)
+   passe-cable Molex : monde (141, 200) -> local (137, 196)                  */
+module rear() {
     difference() {
-        slab(144,126);
-        translate([61.5,11.5,0]) linear_extrude(t+2) square([151,87]);      // PSU cutout
-        for (x=[75:16:135]) translate([x-4,2,0]) linear_extrude(t+2) square([8,8]);  // air sous PSU (partie A)
-    }
-}
-module rear_A2() {
-    difference() {
-        union() {
-            slab(144,126);
-            translate([144,40,0]) linear_extrude(t) tab2d();
-            translate([144,100,0]) linear_extrude(t) tab2d();
+        slab(iw, ih);
+        // decoupe PSU + jeu 1 mm
+        translate([61.5, 11.5, 0]) linear_extrude(t+2) square([151, 87]);
+        // 2 grommets SAS ⌀36
+        for (gx=grom_x) translate([gx-4, grom_z-4, -1])
+            linear_extrude(t+2) circle(d=grom_d);
+        // passe-cable Molex ⌀12 (Add2PSU)
+        translate([molex_x-4, molex_z-4, -1]) linear_extrude(t+2)
+            circle(d=molex_d);
+        // grilles d'extraction : colonnes hautes gauche/droite
+        for (z=[146:16:242]) {
+            translate([10, z, 0]) linear_extrude(t+2) square([8, 10]);   // gauche
+            translate([iw-18, z, 0]) linear_extrude(t+2) square([8, 10]);// droite
         }
-        translate([74,154,-1]) linear_extrude(t+2) circle(d=grom_d);
-        for (z=[150:16:214]) translate([8,z,0]) linear_extrude(t+2) square([8,10]);  // grille gauche
-        for (p=[[12,12],[12,240]]) translate(p) pilot();
+        // fentes d'air sous PSU (alimentation du ventilateur PSU)
+        for (x=[14:16:60]) translate([x, 2, 0]) linear_extrude(t+2)
+            square([8, 8]);
+        for (x=[222:16:260]) translate([x, 2, 0]) linear_extrude(t+2)
+            square([8, 8]);
+        // trous inserts M4 (jetees)
+        for (p=[[12,12],[12,240],[262,12],[262,240],[137,12],[137,240]])
+            translate(p) clrh(d=m4_clear);
     }
-}
-module rear_B1() {
-    difference() {
-        slab(130,126);
-        translate([61.5-144,11.5,0]) linear_extrude(t+2) square([151,87]);  // PSU cutout
-        for (x=[151:16:211]) translate([x-4,2,0]) linear_extrude(t+2) square([8,8]); // air sous PSU (partie B)
-        for (p=[30,120]) translate([-2,p-2]) linear_extrude(t) slot2d();
-        translate([118,12]) pilot();
-    }
-}
-module rear_B2() {
-    difference() {
-        slab(130,126);
-        translate([201-144,154,-1]) linear_extrude(t+2) circle(d=grom_d);
-        for (z=[150:16:214]) translate([232-4-144,z,0]) linear_extrude(t+2) square([8,10]);  // grille droite
-        for (x=[160:16:216]) if (x-144>=0) translate([x-4-144,240,0]) linear_extrude(t+2) square([8,8]); // bande haute
-        for (p=[30,120]) translate([-2,p-2]) linear_extrude(t) slot2d();
-        for (p=[[118,12],[118,240]]) translate(p) pilot();
-    }
-}
-module grommet_ring() {
-    difference() {
-        cylinder(h=t,d=grom_d+14);
-        translate([0,0,-1]) cylinder(h=t+2,d=grom_d);
+    // renforts des grommets (imprimes avec le panneau)
+    for (gx=grom_x) translate([gx-4, grom_z-4, 0]) difference() {
+        cylinder(h=t, d=grom_d+16);
+        translate([0,0,-1]) cylinder(h=t+2, d=grom_d);
     }
 }
 
-/* ================= PANNEAUX LATERAUX =================
-   local : lx=Ym-4 (0..352), ly=Zm-4 (0..252). joints lx@176, ly@126.
-   Trous disques : uniquement PANNEAU GAUCHE (cote PCB).                    */
-module side_piece(wx,hz,with_holes=false) {
+/* ================= PANNEAUX LATERAUX (monoblocs 352 x 252) =================
+   local : lx=Ym-4, ly=Zm-4.
+   Trous 6-32 disques : uniquement PANNEAU GAUCHE (cote PCB).               */
+module side(with_holes=false) {
     difference() {
-        slab(wx,hz);
+        slab(id, ih);
         if (with_holes) {
-            // vis disques : ly = screw_y-4-? disques sur tranche : les vis
-            // sont verticales, la face PCB fait face a ce panneau :
-            // local x = screw_x[i]-4 ; local y = screw_y[k]-4
-            for (sx=screw_x, sy=screw_y)
-                if (sx-4 > 0 && sx-4 < wx && sy-4 > 0 && sy-4 < hz)
-                    translate([sx-4, sy-4]) clrh(d=m632,h=t+4);
-            // pilotes poteaux avant/arriere
-            for (p=[[12,12],[12,240],[340,12],[340,240],[176,12],[176,240]])
-                translate(p) pilot();
-        } else {
-            for (p=[[12,12],[12,240],[340,12],[340,240],[176,12],[176,240]])
-                if (p[0]<wx && p[1]<hz) translate(p) pilot();
+            // passage vis 6-32 pour CHAQUE disque : les trous lateraux des HDD
+            // traversent le disque -> pas de trou dans le panneau (les vis
+            // sont verticales). Par contre : inserts M3 pour fixation etagere
+            // et lid se font depuis l'interieur (voir shelf/lid).
+            // Rien : panneau nu.
         }
+        // trous inserts M4 (jetees avant/arriere)
+        for (p=[[12,12],[12,240],[340,12],[340,240],[176,12],[176,240]])
+            translate(p) clrh(d=m4_clear);
     }
 }
-// gauche : decoupe en 4 (172/180 x 126/126)
-module sideL_A1() side_piece(172,126,true);
-module sideL_A2() { difference() {
-    union() { side_piece(172,126,true);
-        translate([172,40,0]) linear_extrude(t) tab2d();
-        translate([172,100,0]) linear_extrude(t) tab2d(); }
-} }
-module sideL_B1() { difference() {
-    union() { side_piece(180,126,true); }
-    for (p=[30,100]) translate([-2,p-2]) linear_extrude(t) slot2d();
-} }
-module sideL_B2() { difference() {
-    union() { side_piece(180,126,true); }
-    for (p=[30,100]) translate([-2,p-2]) linear_extrude(t) slot2d();
-} }
-// droite : sans trous disques
-module sideR_A1() side_piece(172,126,false);
-module sideR_A2() side_piece(172,126,false);
-module sideR_B1() side_piece(180,126,false);
-module sideR_B2() side_piece(180,126,false);
+module sideL() side(true);
+module sideR() side(false);
 
-/* ================= FOND / PLAFOND =================
-   local : lx=Xm-4 (0..274), ly=Ym-4 (0..352). joints lx@144, ly@176.        */
-module bottom_A1() {
+/* ================= FOND / PLAFOND (monoblocs 274 x 352) =================
+   local : lx=Xm-4, ly=Ym-4.                                                */
+module bottom() {
     difference() {
-        slab(144,172);
-        for (p=[[12,12],[132,12]]) translate(p) pilot();       // poteaux
-        // fixations cage (struts x 12/266, y 45/115/185 -> local 8/262, 41/111/181)
-        translate([8,41]) pilot(); translate([8,111]) pilot(); translate([8,181]) pilot();
+        slab(iw, id);
+        // trous inserts M4 : jetees (monde 16/16, 16/344, 266/16, 266/344)
+        for (p=[[12,12],[12,340],[262,12],[262,340],[137,12],[137,340]])
+            translate(p) clrh(d=m4_clear);
+        // struts (monde x 12+12=24? non : struts aux coins de cage)
+        // strut centres : monde (24/258, 57/127/193) -> local (20/254, 53/123/173)
+        for (xx=[20,254], yy=[53,123,193]) translate([xx,yy]) clrh(d=m4_clear);
+        // fixation Add2PSU : 4 trous M3 insert (entraxe 64x24, monde x24+5..x89)
+        for (dx=[0,a2p_hole_dx], dy=[a2p_y-4+ (a2p_w-a2p_hole_dy)/2,
+                                     a2p_y-4+(a2p_w+a2p_hole_dy)/2])
+            translate([a2p_x-4+dx, dy]) clrh(d=ruthex_m3, h=6);
     }
 }
-module bottom_A2() {
+module top() {
     difference() {
-        union() { slab(130,172);
-            translate([130,40,0]) linear_extrude(t) tab2d();
-            translate([130,140,0]) linear_extrude(t) tab2d(); }
-        translate([262-4,41]) pilot(); translate([262-4,111]) pilot(); translate([262-4,181]) pilot();
+        slab(iw, id);
+        // trous inserts M4 : jetees
+        for (p=[[12,12],[12,340],[262,12],[262,340],[137,12],[137,340]])
+            translate(p) clrh(d=m4_clear);
+        // event haut au-dessus du plenum : monde x 40..240, y 200..330
+        for (x=[40:16:236]) translate([x-4, 196, 0]) linear_extrude(t+2)
+            square([8, 130]);
     }
 }
-module bottom_B1() {
+
+/* ================= ETAGERE (274 x 164, ts=3.2) =================
+   monde z 104..107.2, y 30..194 ; trous struts M3 insert (dessous).        */
+module shelf() {
     difference() {
-        slab(144,180);
-        translate([8,262-4]) pilot();
-        for (p=[30,100]) translate([-2,p-2]) linear_extrude(t) slot2d();
+        slab(iw, 164, ts);
+        // trous struts : monde (24/258, 57/127/193) -> local (20/254, 27/97/163)
+        for (xx=[20,254], yy=[27,97,163]) translate([xx,yy]) clrh(d=ruthex_m3,h=ts+2);
+        // passage d'air lateral (2 encoches 20x20 aux coins avant)
+        translate([6,4,0]) cube([20,20,ts]);
+        translate([iw-26,4,0]) cube([20,20,ts]);
     }
 }
-module bottom_B2() {
+
+/* ================= LID (274 x 326, ts=3.2) =================
+   monde z H-t-ts..H-t ; couvre y 26..352. Trous 6-32 disques.              */
+module lid() {
     difference() {
-        slab(130,180);
-        translate([118,258]) pilot();
-        for (p=[30,140]) translate([-2,p-2]) linear_extrude(t) slot2d();
-    }
-}
-module top_A1() {
-    difference() {
-        slab(144,172);
-        for (p=[[12,12],[132,12]]) translate(p) pilot();
-        // event haut : monde x 40..240, y 200..330 -> local 36..236, 196..326
-        for (x=[40:16:220]) if (x < 144) translate([x-4,196,0]) linear_extrude(t+2) square([8,130]);
-    }
-}
-module top_A2() {
-    difference() {
-        union() { slab(130,172);
-            translate([130,40,0]) linear_extrude(t) tab2d();
-            translate([130,140,0]) linear_extrude(t) tab2d(); }
-        for (x=[152:16:232]) translate([x-4,196,0]) linear_extrude(t+2) square([8,130]);
-    }
-}
-module top_B1() {
-    difference() {
-        slab(144,180);
-        for (p=[30,140]) translate([-2,p-2]) linear_extrude(t) slot2d();
-    }
-}
-module top_B2() {
-    difference() {
-        slab(130,180);
-        for (p=[30,140]) translate([-2,p-2]) linear_extrude(t) slot2d();
+        slab(iw, 326, ts);
+        // 16 trous de vis disques (⌀3.9) : monde x=screw_x, y=screw_y
+        for (sx=screw_x, sy=screw_y)
+            translate([sx-4, sy-30]) clrh(d=m632, h=ts+2);
+        // trous inserts M3 pour fixation aux poteaux (4 + 2 milieux par bord)
+        for (p=[[12,12],[12,314],[262,12],[262,314],[137,12],[137,314]])
+            translate(p) clrh(d=m4_clear, h=ts+2);
     }
 }
 
 /* ================= STRUCTURE INTERNE ================= */
-// etagere : monde z 104..107.2, x 4..278, y 30..194 -> pieces (bed_max : 274x164 -> 2 pcs)
-module shelf_L() {   // x 4..150, y 30..194
-    difference() {
-        slab(146,164,ts);
-        translate([8,41-30+8]) clrh(); translate([8,111-30+8]) clrh(); translate([8,181-30+8]) clrh();
-    }
-}
-module shelf_R() {   // x 150..278
-    difference() {
-        slab(128,164,ts);
-        translate([128-12,11]) clrh(); translate([128-12,81]) clrh(); translate([128-12,151]) clrh();
-        // vis laterales panneau droit (monde z 107.2, x disques -> local)
-        for (sx=screw_x) if (sx-150 > 4 && sx-150 < 124)
-            translate([sx-150, sy_local(sx)]) clrh(d=m632,h=ts+2);
-    }
-}
-function sy_local(x) = 106.28 - 48;   // provisoire : voir notes
-
-// lid : monde z 209.2..212.4, pieces 2x2. Trous 6-32 aux axes screw_x/screw_y.
-module lid_A1() {   // x 4..150, y 30..202
-    difference() {
-        slab(146,172,ts);
-        for (sx=screw_x, sy=screw_y)
-            if (sx>=8 && sx<=146 && sy>=34 && sy<=198)
-                translate([sx-4, sy-30]) clrh(d=m632,h=ts+2);
-    }
-}
-module lid_A2() {   // x 150..278, y 30..202
-    difference() {
-        slab(128,172,ts);
-        for (sx=screw_x, sy=screw_y)
-            if (sx>=154 && sx<=274 && sy>=34 && sy<=198)
-                translate([sx-150, sy-30]) clrh(d=m632,h=ts+2);
-    }
-}
-module lid_B1() {   // x 4..150, y 202..356
-    difference() {
-        slab(146,150,ts);
-    }
-}
-module lid_B2() {
-    slab(130,150,ts);
-}
-
-// poteaux cage : monde (12/266, 45/115/181), 24x24, z 4..104
+// strut : poteau cage 24x24 x 100, tete avec poche insert M3 (fixation etagere)
 module strut() {
     difference() {
         cube([24,24,100]);
-        translate([12,12,-1]) pilot(h=14);
+        // insert M3 dans la tete (montage : vis depuis l'etagere)
+        translate([12,12,ruthex_m3_depth-1]) rotate([180,0,0]) rtx3();
+        // pilotage fond
+        translate([12,12,-1]) pilot(h=8);
     }
 }
 
-// jetees d'angle 24x24 x 252 (z 4..256)
+// jetee d'angle 24x24 x 252 (z 4..256), poches inserts M4 sur 2 faces + tete M3
 module corner_post() {
     difference() {
         cube([24,24,252]);
-        for (z=[12,126,240]) {
-            translate([12,3,z])  rotate([-90,0,0]) pilot();
-            translate([3,12,z])  rotate([90,0,0])  pilot();
+        // faces : poches M4 (prof 9.1) vers panneaux Y (avant/arriere)
+        for (z=[12, 126, 240]) {
+            translate([12, -0.1, z]) rotate([-90,0,0]) rtx4();   // face -Y
+            translate([24.1, 12, z])  rotate([-90,0,90]) rtx4(); // face X
         }
-        // pilote vertical vers fond/plafond
-        translate([12,12,-1]) pilot(h=16);
-        translate([12,12,244]) pilot(h=14);
-    }
-}
-
-module fan_guard() {   // grille 120 mm (imprimee a plat, 3 mm)
-    difference() {
-        union() {
-            difference() {
-                linear_extrude(height=3) offset(r=3) offset(delta=-3) square([124,124]);
-                translate([0,0,-1]) cylinder(h=5, d=fan_cut-8);
-            }
-            for (a=[0:30:150]) rotate([0,0,a])
-                translate([-60,-1.5,0]) cube([120,3,3]);
-            rotate([0,0,90]) translate([-60,-1.5,0]) cube([120,3,3]);
-        }
-        for (dx=[-52.5,52.5], dz=[-52.5,52.5])
-            translate([dx,dz,-1]) cylinder(h=5,d=fan_screw);
-        translate([0,0,-1]) cylinder(h=5,d=10);
+        // tete : insert M3 (fixation lid / top)
+        translate([12,12,252-ruthex_m3_depth]) rtx3();
     }
 }
 
 /* ================= ACCESSOIRES ================= */
-module atx_bridge() {   // pont PS_ON : 3 pin headers 2.54 -> impression libre
+module atx_bridge() {   // pont PS_ON de secours (sans Add2PSU)
     difference() {
         cube([14,10,8]);
         for (x=[3.5,7,10.5]) translate([x,5,-1]) cylinder(h=8,d=2.7,$fn=16);
@@ -380,6 +282,23 @@ module box_foot() {     // pied : visse sous le fond
     difference() {
         cube([30,30,12]);
         translate([15,15,-1]) pilot(h=16);
+    }
+}
+module fan_guard() {   // grille 120 mm (imprimee a plat, 3 mm)
+    difference() {
+        union() {
+            difference() {
+                linear_extrude(height=3) offset(r=3) offset(delta=-3)
+                    square([124,124]);
+                translate([0,0,-1]) cylinder(h=5, d=fan_cut-8);
+            }
+            for (a=[0:30:150]) rotate([0,0,a])
+                translate([-60,-1.5,0]) cube([120,3,3]);
+            rotate([0,0,90]) translate([-60,-1.5,0]) cube([120,3,3]);
+        }
+        for (dx=[-52.5,52.5], dz=[-52.5,52.5])
+            translate([dx,dz,-1]) cylinder(h=5,d=fan_screw);
+        translate([0,0,-1]) cylinder(h=5,d=10);
     }
 }
 
@@ -396,83 +315,52 @@ module fans() {
     %for (cx=fan_cx)
         translate([cx-fan_side/2, 4, fan_cz-fan_side/2]) cube([fan_side,25,fan_side]);
 }
+module add2psu() {
+    %translate([a2p_x, a2p_y, t]) cube([a2p_l, a2p_w, 15]);
+    %translate([a2p_x+a2p_l/2-32, a2p_y+a2p_w/2-12, t])
+        for (dx=[0,a2p_hole_dx], dy=[(a2p_w-a2p_hole_dy)/2,(a2p_w+a2p_hole_dy)/2])
+            translate([dx,dy,-1]) cylinder(h=10,d=3,$fn=24);
+}
 
 /* ================= ASSEMBLAGE ================= */
 module assembly() {
-    color("DimGray") {   // lateraux : x 0..4 (gauche) / 278..282 (droite)
-        // rotate([90,0,90]) : local x->Y monde, local y->Z monde, epaisseur->X
-        translate([0,4,4])     rotate([90,0,90]) sideL_A1();   // y 4..176, z 4..130
-        translate([0,176,4])   rotate([90,0,90]) sideL_B1();   // y 176..356
-        translate([0,4,126])   rotate([90,0,90]) sideL_A2();   // z 130..256
-        translate([0,176,126]) rotate([90,0,90]) sideL_B2();
-        // droite
-        translate([278,4,4])    rotate([90,0,90]) sideR_A1();
-        translate([278,176,4])  rotate([90,0,90]) sideR_B1();
-        translate([278,4,126])  rotate([90,0,90]) sideR_A2();
-        translate([278,176,126]) rotate([90,0,90]) sideR_B2();
+    color("DimGray") {   // lateraux
+        translate([0,4,4])     rotate([90,0,90]) sideL();
+        translate([278,4,4])   rotate([90,0,90]) sideR();
     }
     color("DimGray") {   // fond / plafond
-        translate([4,4,0])       bottom_A1();
-        translate([148,4,0])     bottom_A2();   // x 148..278
-        translate([4,176,0])     bottom_B1();
-        translate([148,176,0])   bottom_B2();
-        translate([4,4,H-t])     top_A1();
-        translate([148,4,H-t])   top_A2();
-        translate([4,176,H-t])   top_B1();
-        translate([148,176,H-t]) top_B2();
+        translate([4,4,0])   bottom();
+        translate([4,4,H-t]) top();
     }
-    color("SlateGray") { // avant y 0..4 / arriere y 356..360
-        // rotate([90,0,0]) : extrusion Z->Y negative ; le panneau local (0,0)
-        // correspond a (x=lx+4, z=ly+4) une fois translate en (4,4,4) : OK.
-        translate([4,t,4])   rotate([90,0,0]) front_A1();
-        translate([4,t,86])  rotate([90,0,0]) front_A2();
-        translate([148,t,4]) rotate([90,0,0]) front_B1();
-        translate([148,t,86]) rotate([90,0,0]) front_B2();
-        translate([4,t,4])   rotate([90,0,0]) front_bars();   // bars
-        // arriere : rotation +90 autour X (local y -> -Z monde) ; decalage
-        translate([4,D,4])   rotate([90,0,0]) rear_A1();
-        translate([4,356,126]) rotate([90,0,0]) rear_A2();
-        translate([148,356,4]) rotate([90,0,0]) rear_B1();
-        translate([148,356,126]) rotate([90,0,0]) rear_B2();
-        // grommet rings (faisant partie du panneau arriere)
-        translate([4,356,4]) rotate([90,0,0])
-            for (gx=grom_x, gz=[grom_z-4]) translate([gx-4,gz-4,0]) grommet_ring();
+    color("SlateGray") { // avant / arriere
+        translate([4,t,4])  rotate([90,0,0]) front();
+        translate([4,D,4])  rotate([90,0,0]) rear();
     }
-    color("Orange") {    // etagere z 104 (ts 3.2) et lid z 209.2
-        translate([4,30,104])   shelf_L();
-        translate([150,30,104]) shelf_R();
-        translate([4,30,H-t-ts])  lid_A1();
-        translate([150,30,H-t-ts]) lid_A2();
-        translate([4,202,H-t-ts]) lid_B1();
-        translate([150,202,H-t-ts]) lid_B2();
+    color("Orange") {    // etagere + lid
+        translate([4,30,104])   shelf();
+        translate([4,26,H-t-ts]) lid();
     }
-    color("Gray") for (xx=[12,266], yy=[45,115,181])
-        translate([xx-12, yy-12, 4]) strut();
-    color("Goldenrod") for (px=[4,W-28], py=[4,D-28])
-        translate([px,py,4]) corner_post();
-    drives(); psu(); fans();
+    color("Gray")        // struts : monde (24/258, 57/127/193) - 12
+        for (xx=[20,254], yy=[53,123,193])
+            translate([xx-12+12-12+12, yy, 4]) strut();   // voir note struts
+    color("Goldenrod")
+        for (px=[4,W-28], py=[4,D-28])
+            translate([px,py,4]) corner_post();
+    drives(); psu(); fans(); add2psu();
 }
 
 /* ================= RENDU ================= */
 if (part=="assembly") assembly();
-else if (part=="front") { front_A1(); translate([144,0,0]) front_B1();
-    translate([0,86,0]) front_A2(); translate([144,86,0]) front_B2(); }
-else if (part=="rear") { rear_A1(); translate([144,0,0]) rear_B1();
-    translate([0,126,0]) rear_A2(); translate([144,126,0]) rear_B2(); }
-else if (part=="left") { sideL_A1(); translate([172,0,0]) sideL_B1();
-    translate([0,126,0]) sideL_A2(); translate([172,126,0]) sideL_B2(); }
-else if (part=="right") { sideR_A1(); translate([172,0,0]) sideR_B1();
-    translate([0,126,0]) sideR_A2(); translate([172,126,0]) sideR_B2(); }
-else if (part=="bottom") { bottom_A1(); translate([144,0,0]) bottom_A2();
-    translate([0,172,0]) bottom_B1(); translate([144,172,0]) bottom_B2(); }
-else if (part=="top") { top_A1(); translate([144,0,0]) top_A2();
-    translate([0,172,0]) top_B1(); translate([144,172,0]) top_B2(); }
-else if (part=="shelf") { shelf_L(); translate([146,0,0]) shelf_R(); }
-else if (part=="lid") { lid_A1(); translate([150,0,0]) lid_A2();
-    translate([0,172,0]) lid_B1(); translate([150,172,0]) lid_B2(); }
+else if (part=="front") front();
+else if (part=="rear") rear();
+else if (part=="left") sideL();
+else if (part=="right") sideR();
+else if (part=="bottom") bottom();
+else if (part=="top") top();
+else if (part=="shelf") shelf();
+else if (part=="lid") lid();
 else if (part=="strut") strut();
 else if (part=="corner_post") corner_post();
 else if (part=="fan_guard") fan_guard();
-else if (part=="grommet_ring") grommet_ring();
 else if (part=="atx_bridge") atx_bridge();
 else if (part=="box_foot") box_foot();
