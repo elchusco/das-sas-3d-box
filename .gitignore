@@ -1,0 +1,12 @@
+# Fichiers générés
+stl/
+*.stl
+*.gcode
+
+# Rendus volumineux (garder les PNG de référence commités)
+# renders/*.png
+
+# Système
+.DS_Store
+*.swp
+*~
