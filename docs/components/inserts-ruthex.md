@@ -1,6 +1,7 @@
 # Inserts Ruthex — assemblage des panneaux
 
-Kit utilisé : **Ruthex GE-KASTEN-001** (photos dans ce dossier).
+Kit utilisé : **Ruthex GE-KASTEN-001**
+(photos : `ruthex-kit-dimensions.jpg` — étiquette cotes, `ruthex-kit-contenu.jpg` — contenu du kit).
 
 | Réf | Dimensions (⌀d1 ext. / ⌀d2 / L / min. w) | Stock kit | Usage dans le projet |
 |---|---|---|---|

@@ -1,6 +1,6 @@
 /*
 Boitier DAS 8x 3.5" SAS (Seagate Constellation ES.3) + ATX (Corsair CX430)
-v2.3 — disques SUR TRANCHE, 2 fans 120 push sur face avant, PSU arriere-bas.
+v2.4 — disques SUR TRANCHE, 2 fans 120 push sur face avant, PSU arriere-bas.
 PANNEAUX MONOBLOCS (plateau 1 m^2, bed_max=1000) + inserts Ruthex + Add2PSU.
 
 Unites : mm. Repere monde : X (largeur 0..282), Y (prof. 0..360), Z (haut 0..260).

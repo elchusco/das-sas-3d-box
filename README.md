@@ -18,7 +18,7 @@ alimenté par un **Corsair CX430**. Impression 3D en panneaux segmentés.
 | Audit v1 (`scad/boitier_8_sas_sata_atx_v1.scad`) | ✅ 3 défauts bloquants trouvés |
 | Conception v2 (disques sur tranche, fans push, PSU arrière) | ✅ |
 | **v2.3** (plateau 1 m² : panneaux monoblocs, inserts Ruthex, Add2PSU) | ✅ géométrie validée |
-| Finitions (grilles, anti-vibration, fan_guard, STL) | ⏳ voir [TODO.md](TODO.md) |
+| **v2.4** (finitions : fraisages, pieds, grilles fines, fan_guard, exploded, STL) | ✅ géométrie validée |
 | Impression / assemblage / test | ⬜ |
 
 ## Architecture retenue (v2)
@@ -57,7 +57,7 @@ alimenté par un **Corsair CX430**. Impression 3D en panneaux segmentés.
 ```
 scad/
   boitier_8_sas_sata_atx_v1.scad   # v1 originale (archivée, cf. audit docs/audit-v1.md)
-  boitier_8_sas_v2.scad            # v2.3 courante (monoblocs, Ruthex, Add2PSU)
+  boitier_8_sas_v2.scad            # v2.4 courante (monoblocs, Ruthex, Add2PSU)
 docs/
   audit-v1.md                      # audit de la v1 (conflits trouvés)
   conformite.md                    # tableau besoin ↔ mesure ↔ statut
@@ -65,11 +65,13 @@ docs/
     add2psu.md                     #   module démarrage auto (15,19 €, lot de 2)
     add2psu_dkey_70x30mm.jpg       #   photo produit
     inserts-ruthex.md              #   inserts laiton M3/M4 (perçages, plan)
+    ruthex-kit-dimensions.jpg      #   étiquette kit Ruthex (cotes inserts)
+    ruthex-kit-contenu.jpg         #   contenu du kit Ruthex
   sff8301-mounting-wdc.pdf         # positions de vis SFF-8301 (WDC/SNIA)
   seagate-es3-product-manual.pdf   # manuel ES.3 (dimensions Fig.12)
 renders/                           # rendus PNG (assembly, faces, lid…)
-stl/                               # exports STL (à venir)
-TODO.md                            # points à fignoler
+stl/                               # exports STL (13 pièces, commités)
+TODO.md                            # points à fignoler / reportés
 ```
 
 ## Rendu / export

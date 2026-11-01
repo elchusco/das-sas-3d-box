@@ -1,10 +1,5 @@
-# Fichiers générés
-stl/
-*.stl
+# Fichiers générés (les STL de référence sont commités dans stl/)
 *.gcode
-
-# Rendus volumineux (garder les PNG de référence commités)
-# renders/*.png
 
 # Système
 .DS_Store
