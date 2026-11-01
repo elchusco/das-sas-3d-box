@@ -24,8 +24,8 @@ Besoin ↔ mesure ↔ source ↔ statut. Valeurs "monde" du repère SCAD
 | Besoin | Mesure v2 | Source | Statut |
 |---|---|---|---|
 | Volume PSU | x 66..216, y 216..356, z 16..102 sur 4 plots 20×20×12 venus du fond | doc Corsair | ✅ |
-| Fixation PSU | 4 trous ATX 6-32 au panneau arrière | ATX | ⚠️ coordonnées à mesurer sur le CX430 |
-| Découpe IEC + interrupteur | fenêtre 128×64 (retrait 11 mm pour les trous ATX) | doc Corsair | ⚠️ IEC/interrupteur à vérifier |
+| Fixation PSU | 4 trous 6-32 oblongs ±0.75 au panneau arrière, ventilateur vers le haut | mesure CX430 | ✅ |
+| Découpe IEC + interrupteur | découpe suivant grille + interrupteur + IEC mesurés (+2 mm), ≥ 2.55 mm de matière autour des trous | mesure CX430 | ✅ |
 | Air d'admission PSU | 7 fentes sous le PSU (x 90..191, z 6..14), entre les plots | conception | ✅ |
 | Démarrage sans carte mère | **Add2PSU** (auto, cf. docs/components/add2psu.md) ou `atx_bridge` pont fixe de secours + interrupteur secteur | spec ATX | ✅ |
 | Budget puissance | 8×~9 W régime / ~200 W spin-up + 2 fans ≪ 384 W 12 V | datasheet | ✅ |

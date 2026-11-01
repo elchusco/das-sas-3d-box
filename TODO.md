@@ -25,11 +25,11 @@ lid (encoches d'angle poteaux, trous M3 poteaux arrière, offset vis) →
 
 ### Reste à vérifier sur pièces (v2.6)
 
-- [ ] **Trous ATX** : coordonnées (6,80)(144,80)(120,6)(6,16) vue arrière issues d'une
-  source secondaire — **mesurer le CX430** (et l'orientation ventilateur bas/haut,
-  qui retourne le motif) avant d'imprimer `rear`.
-- [ ] **Fenêtre PSU réduite** (128×64) : vérifier que l'IEC et l'interrupteur restent
-  accessibles.
+- [x] **Trous ATX** : mesurés sur le CX430 (2026-11-01), ventilateur **vers le haut**
+  (aspire le plenum) : (6.5,81.5) (144.5,81.5) (6.5,16.5) (120.5,6.5), oblongs ±0.75.
+- [x] **Fenêtre PSU** : découpe en 3 rectangles suivant grille / interrupteur / IEC
+  mesurés (IEC x 97..146 dépassait l'ancienne fenêtre) ; ≥ 2.55 mm de matière
+  autour des trous.
 - [ ] **Vis PSU** : 6-32 × 3/8" (panneau 4 mm).
 - [ ] **Rainures 4×4 sur les 12 arêtes** (panneaux aux cotes intérieures) : esthétique,
   non traité.

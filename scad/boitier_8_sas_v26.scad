@@ -26,9 +26,11 @@ v2.6 :
 Unites : mm. Repere monde : X (largeur 0..282), Y (prof. 0..360), Z (haut 0..260).
 
 REFERENCES : cf. v2 (SFF-8301 Table 3-1, ES.3, CX430, Add2PSU, Ruthex).
- - ATX : 4 trous 6-32 face arriere, coords (vue de l'arriere, origine coin
-   bas-gauche) (6,80) (144,80) (120,6) (6,16) — A VERIFIER sur le CX430
-   (orientation fan en bas/haut => motif retourne).
+ - CX430 MESURE (2026-11-01), ventilateur VERS LE HAUT (aspire le plenum),
+   face arriere vue de l'exterieur, origine coin bas-gauche :
+   trous 6-32 (6.5,81.5) (144.5,81.5) (6.5,16.5) (120.5,6.5) ;
+   IEC x 97..146 z 13..35 ; interrupteur x 111..132 z 41..57 ;
+   grille x 11..140 z 7..81 (x <= 92 a hauteur IEC/interrupteur).
 
 Parts : assembly, exploded, front, rear, left, right, bottom, top, shelf,
         cage_plate, strut, corner_post, corner_post_m, fan_guard,
@@ -111,8 +113,13 @@ fan_cz = 160;          // monde Z : z 100..220
 psu_w=150; psu_h=86; psu_d=140;
 psu_x0=66; psu_y0=216; psu_z0=16;
 psu_pad = 20;                      // plots 20x20x12 aux 4 coins
-psu_win = 11;                      // retrait de la decoupe arriere
-psu_holes = [[6,80],[144,80],[120,6],[6,16]];   // ATX, vue arriere
+psu_holes = [[6.5,81.5],[144.5,81.5],[6.5,16.5],[120.5,6.5]];  // mesures, vue arriere
+psu_slot  = 0.75;                  // jeu vertical +/- des trous (oblongs)
+// fenetre arriere (vue arriere, coords PSU) : grille + interrupteur + IEC
+// (+2 mm de marge), >= 2.5 mm de matiere autour de chaque trou
+psu_win = [[11,7, 92,79],     // grille, partie gauche
+           [11,37, 140,79],   // grille haute + interrupteur
+           [92,12, 148,37]];  // prise IEC (bas a 12 : matiere sous le trou bas-droit)
 
 /* Add2PSU (70 x 30, entraxe 64 x 24) : sous l'etagere */
 a2p_l=70; a2p_w=30; a2p_x=52; a2p_y=137;
@@ -181,12 +188,14 @@ module front() {
 module rear() {
     difference() {
         slab(iw, ih);
-        // fenetre PSU (retrait psu_win : matiere autour des trous ATX)
-        translate([psu_x0+psu_win-t, psu_z0+psu_win-t, -1])
-            cube([psu_w-2*psu_win, psu_h-2*psu_win, t+2]);
-        // trous ATX 6-32 (origine coin bas-gauche vue arriere = X max)
+        // fenetre PSU (vue arriere : x PSU croissant = X monde decroissant)
+        for (r=psu_win)
+            translate([psu_x0+psu_w-r[2]-t, psu_z0+r[1]-t, -1])
+                cube([r[2]-r[0], r[3]-r[1], t+2]);
+        // trous 6-32 oblongs verticaux (+/- psu_slot)
         for (h=psu_holes)
-            translate([psu_x0+psu_w-h[0]-t, psu_z0+h[1]-t, -1]) cyl(m632, t+2);
+            translate([psu_x0+psu_w-h[0]-t, psu_z0+h[1]-t, -1])
+                hull() for (dz=[-psu_slot, psu_slot]) translate([0,dz,0]) cyl(m632, t+2);
         // grommets SAS + Molex
         for (gx=grom_x) translate([gx-t, grom_z-t, -1]) cyl(grom_d, t+2);
         translate([molex_x-t, molex_z-t, -1]) cyl(molex_d, t+2);
