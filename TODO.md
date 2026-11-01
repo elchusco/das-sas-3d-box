@@ -36,6 +36,11 @@ lid (encoches d'angle poteaux, trous M3 poteaux arrière, offset vis) →
   carré 105 alignés (#R2).
 - [x] ~~Vue éclatée + STL manquants~~ — `part="exploded"` (explode=60) +
   13 STL exportés dans `stl/`, dimensions vérifiées par script (#R3).
+- [x] ~~Z-fighting F5 (flicker) + bugs géométriques associés~~ — v2.5 :
+  découpes débordantes, collerettes grommets saillantes, ghosts +0.3,
+  grille avant recalée (bug +4 mm, barreaux bouchant des vis), struts
+  (pilote borgne, placement), fraises étagère, fraisages front/top,
+  lid/poteaux (encoches, trous M3) → cf. `docs/audit-v24-flicker.md`.
 
 ## SCAD — reste éventuel
 

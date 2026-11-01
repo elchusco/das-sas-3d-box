@@ -19,7 +19,7 @@ alimenté par un **Corsair CX430**. Impression 3D en panneaux segmentés.
 | Conception v2 (disques sur tranche, fans push, PSU arrière) | ✅ |
 | **v2.3** (plateau 1 m² : panneaux monoblocs, inserts Ruthex, Add2PSU) | ✅ géométrie validée |
 | **v2.4** (finitions : fraisages, pieds, grilles fines, fan_guard, exploded, STL) | ✅ géométrie validée |
-| **v2.5** (anti z-fighting F5 + corrections : grille recalée, struts, fraisages, lid/poteaux, STL régénérés) | ✅ géométrie validée |
+| **v2.5** (anti z-fighting F5 + corrections : grille recalée, struts, fraisages, lid/poteaux, STL régénérés) | ✅ géométrie validée (cf. `docs/audit-v24-flicker.md`) |
 | Impression / assemblage / test | ⬜ |
 
 ## Architecture retenue (v2)
@@ -61,6 +61,7 @@ scad/
   boitier_8_sas_v2.scad            # v2.5 courante (monoblocs, Ruthex, Add2PSU)
 docs/
   audit-v1.md                      # audit de la v1 (conflits trouvés)
+  audit-v24-flicker.md             # audit v2.4→v2.5 (z-fighting + 8 bugs)
   conformite.md                    # tableau besoin ↔ mesure ↔ statut
   components/                      # composants externes intégrés
     add2psu.md                     #   module démarrage auto (15,19 €, lot de 2)
