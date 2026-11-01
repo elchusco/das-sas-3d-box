@@ -9,6 +9,32 @@ fraises M3 étagère côté dessus, fraisages M4 front/top côté extérieur,
 lid (encoches d'angle poteaux, trous M3 poteaux arrière, offset vis) →
 **faits**. STL régénérés (13 pièces, solides valides).
 
+## v2.6 — corrections audit v2.5 (`scad/boitier_8_sas_v26.scad`) ✅
+
+- [x] **B1** Plaque de cage au ras des disques (z 209.35, pénétration 6-32 = 2.85 mm)
+- [x] **B2** Fans recentrés x 80/202 + poteaux 14×24 : 0 collision
+- [x] **B3** Poteaux en miroir (`corner_post`/`corner_post_m`), poches 2 faces + pied + tête M4 ; trous orphelins supprimés
+- [x] **B4** Plus de lid sous le top (plaque limitée à la cage)
+- [x] **B5** Struts en coordonnées monde (`strut_x/strut_y`), trous dérivés
+- [x] **B6** 4 plots 12 mm sous le PSU + 4 trous ATX 6-32 (fenêtre arrière réduite de 11 mm)
+- [x] **M1** Sorties : fentes du top débouchées, 2 rangées de fentes arrière entre poteaux, lèvre déflecteur
+- [x] **M2** Add2PSU sous l'étagère (x 52..122, y 137..167) sur 4 bossages 9.1 mm
+- [x] **M3** Struts 3×3 (portée 117 mm, flèche ≈ 0.5 mm) + joues latérales
+- [x] **M4** sideR : `m4_csk_ext`
+- [x] Mineurs : grille avant pas 12, fan_guard 16 rayons uniques, pieds (fraisage intérieur + logement patin ⌀20)
+
+### Reste à vérifier sur pièces (v2.6)
+
+- [ ] **Trous ATX** : coordonnées (6,80)(144,80)(120,6)(6,16) vue arrière issues d'une
+  source secondaire — **mesurer le CX430** (et l'orientation ventilateur bas/haut,
+  qui retourne le motif) avant d'imprimer `rear`.
+- [ ] **Fenêtre PSU réduite** (128×64) : vérifier que l'IEC et l'interrupteur restent
+  accessibles.
+- [ ] **Vis PSU** : 6-32 × 3/8" (panneau 4 mm).
+- [ ] **Rainures 4×4 sur les 12 arêtes** (panneaux aux cotes intérieures) : esthétique,
+  non traité.
+- [ ] **Anti-vibration disques** : non traité (patins sous les pieds seulement).
+
 ## Reportés (arbitrage propriétaire — plus tard)
 
 - [ ] **#R1 Grilles front** — barreaux intégrés conservés (reco validée) ;
@@ -57,7 +83,10 @@ lid (encoches d'angle poteaux, trous M3 poteaux arrière, offset vis) →
   grommet ⌀36 clippe flush ; sinon réduire la collerette.
 - [ ] **Câbles SAS réels** : reach des queues 200 mm, division au ras du
   grommet (tower et DAS côte à côte).
-- [ ] **Visserie** : 6-32 × 1/4" ×16 (disques), M4 × 12 (~28), M3 × 6/8 (~30).
+- [ ] **Visserie v2.6** : 6-32 × 1/4" ×16 (disques), 6-32 × 3/8" ×4 (PSU),
+  M4 × 12 ×24 (poteaux, inserts M4 ×24) + ×9 (struts, autotaraudées),
+  M4 × 14 ×4 (pieds), M3 × 8 ×13 (étagère ×9, plaque ×4), M3 × 6 ×4 (Add2PSU) ;
+  inserts M3 ×17.
 - [ ] **Interrupteur secteur CX430** : actionnable via la découpe (face
   arrière PSU exposée) — vérifier au montage.
 - [ ] **Molex libre dans la tour** : repérer une prise Molex/SATA free du PSU

@@ -22,15 +22,18 @@ Kit utilisé : **Ruthex GE-KASTEN-001**
 
 | Assemblage | Insert | Vis |
 |---|---|---|
-| Jetées d'angle ↔ panneaux (avant/arrière/côtés) | M4×8.1 dans les poteaux | M4 × 12 |
-| Jetées ↔ fond / plafond | M4×8.1 en tête de poteau | M4 × 12 |
-| Poteaux cage (struts) ↔ étagère | M3×5.7 | M3 × 12 |
-| Add2PSU ↔ fond | M3×5.7 ×4 | M3 × 6 |
-| fan guards (si vissées) | M3×5.7 ×8 | M3 × 8 |
+| Poteaux d'angle ↔ panneaux (avant/arrière/flancs) — v2.6 | M4×8.1 ×16 (2 faces par poteau) | M4 × 12 |
+| Poteaux ↔ fond / plafond | M4×8.1 ×8 (pied + tête) | M4 × 12 |
+| Struts ↔ étagère | M3×5.7 ×9 en tête de strut | M3 × 8 |
+| Joues d'étagère ↔ plaque de cage | M3×5.7 ×4 | M3 × 8 |
+| Add2PSU ↔ bossages du fond | M3×5.7 ×4 | M3 × 6 |
+| Fond ↔ struts (pas d'insert) | pilote ⌀3.3 | M4 × 12 autotaraudeuse |
+| fan guards (si vissées) | traversant ⌀4.5 | vis fan M4 / 5×30 |
 
 ## ⚠️ Exception : les disques
 
 Les trous des HDD sont au standard **6-32 UNC (impérial)** : ni M3 ni M4 ne
-s'y visse. Les 16 vis de disques sont donc des **6-32 × 1/4"** directes dans
-le plastique du lid (3.2 mm, engagement 3.15 mm — conforme SFF-8301,
-pénétration max 3.56). Pas d'insert.
+s'y visse. Les 16 vis de disques sont des **6-32 × 1/4"** qui traversent la
+plaque de cage (3.2 mm, 0.3 mm au-dessus des disques → pénétration 2.85 mm,
+SFF-8301 : 2.39..3.56). Pas d'insert. Idem PSU : 4 × 6-32 × 3/8" à travers le
+panneau arrière.

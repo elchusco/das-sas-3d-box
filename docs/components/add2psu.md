@@ -31,10 +31,11 @@ PSU Dell ── Molex 4p ──(⌀12 pass.)──> Add2PSU ── ATX 24p femel
 
 ## Installation prévue dans le boîtier
 
-- Position : **fond** du boîtier, zone sous le PSU (le PSU occupe x 66..216,
-  y 216..356 — le module se fixe à côté, zone x 20..60, y 240..300).
-- Fixation : 4 vis M3 × 6 via **inserts Ruthex M3×5.7** (⌀4.0, prof. 5.7).
-- Perçages : 4 × ⌀3.2 (libre) — voir `atx_bridge_mount` dans le SCAD.
+- Position (v2.6) : **fond, sous l'étagère**, x 52..122, y 137..167 (entre les
+  rangées de struts, hors emprise PSU x 66..216 / y 216..356).
+- Fixation : 4 vis M3 × 6 dans **inserts Ruthex M3×5.7** posés en tête de
+  4 **bossages ⌀9 × 9.1 mm** venus du fond (`bottom()`, `a2p_holes()`).
+- Entraxe 64 × 24 (`a2p_dx/a2p_dy`) à confirmer à réception.
 - Câblage : Molex entrant (2 fils 18 AWG depuis la tour, via passe-câble ⌀12
   du panneau arrière) + 24 broches court vers le CX430 (~10 cm de chute).
 
