@@ -32,7 +32,8 @@ alimenté par un **Corsair CX430**. Impression 3D en panneaux monoblocs (plateau
   │ fans 120 mm  │   │ 7 canaux d'air de 6.5 mm     │   │ 2 grommets  │
   │ (push)       │   │ vis 6-32 par plaque de cage  │   │ ⌀36 (SAS)   │
   └──────────────┘   └──────────────────────────────┘   └─────────────┘
-  z 107..209 (cage)                    PSU CX430 dessous (z 16..102, pieds 12)
+  z 107..209 (cage)                    PSU CX430 dessous (z 16..102, plots 12),
+                                       ventilateur vers le haut (extracteur)
                                        IEC + interrupteur arrière
 ```
 
@@ -51,7 +52,7 @@ alimenté par un **Corsair CX430**. Impression 3D en panneaux monoblocs (plateau
 |---|---|---|
 | SFF-8301 Rev 1.9 | trous latéraux 6-32 à **28.50 / 130.10 mm** du bout connecteurs, à **6.35 mm** de la face PCB ; pénétration vis 2.39–3.56 mm | Table 3-1 (doc `docs/sff8301-mounting-wdc.pdf`) |
 | Seagate ES.3 ST4000NM0023 | 101.85 × 147.0 × 26.1 max, conforme SFF-8301 | manuel produit (`docs/seagate-es3-product-manual.pdf`, Fig.12) |
-| Corsair CX430 (75-001666) | 150 × 86 × 140 mm, non modulaire, IEC arrière | fiche Corsair |
+| Corsair CX430 (75-001666) | 150 × 86 × 140 mm, non modulaire, IEC arrière ; trous 6-32, IEC, interrupteur et grille **mesurés** | fiche Corsair + mesures (`docs/components/cx430.md`) |
 | Fan 120 mm | découpe ⌀114, fixations M4 carré 105 | standard |
 | Vis disques | 6-32 UNC × 1/4" (engagement 3.15 mm dans plaque 3.2) | SFF-8301 |
 
@@ -69,6 +70,7 @@ docs/
   conformite.md                    # tableau besoin ↔ mesure ↔ statut
   components/                      # composants externes intégrés
     add2psu.md                     #   module démarrage auto (15,19 €, lot de 2)
+    cx430.md                       #   alim : orientation, mesures face arrière, fenêtre
     add2psu_dkey_70x30mm.jpg       #   photo produit
     inserts-ruthex.md              #   inserts laiton M3/M4 (perçages, plan)
     ruthex-kit-dimensions.jpg      #   étiquette kit Ruthex (cotes inserts)
@@ -123,6 +125,9 @@ Nouvelle version = nouveau fichier `scad/boitier_8_sas_vXY.scad` (+ `stl/vXY/`,
   [docs/components/inserts-ruthex.md](docs/components/inserts-ruthex.md).
   Les vis de **disques restent en 6-32 UNC × 1/4"** directes dans la plaque
   de cage (standard impérial des trous HDD, pas d'insert).
+- **Alimentation** : ventilateur **vers le haut** (aspire le plenum), vissée au
+  panneau arrière par 4 × 6-32 × 3/8" ; mesures et choix détaillés dans
+  [docs/components/cx430.md](docs/components/cx430.md).
 - **Démarrage automatique** : module **Add2PSU** (~15 €) — allumer la tour
   démarre le DAS. Détails + référence + emplacement :
   [docs/components/add2psu.md](docs/components/add2psu.md). Le pont `atx_bridge`
