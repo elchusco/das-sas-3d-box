@@ -19,6 +19,7 @@ alimenté par un **Corsair CX430**. Impression 3D en panneaux segmentés.
 | Conception v2 (disques sur tranche, fans push, PSU arrière) | ✅ |
 | **v2.3** (plateau 1 m² : panneaux monoblocs, inserts Ruthex, Add2PSU) | ✅ géométrie validée |
 | **v2.4** (finitions : fraisages, pieds, grilles fines, fan_guard, exploded, STL) | ✅ géométrie validée |
+| **v2.5** (anti z-fighting F5 + corrections : grille recalée, struts, fraisages, lid/poteaux, STL régénérés) | ✅ géométrie validée |
 | Impression / assemblage / test | ⬜ |
 
 ## Architecture retenue (v2)
@@ -57,7 +58,7 @@ alimenté par un **Corsair CX430**. Impression 3D en panneaux segmentés.
 ```
 scad/
   boitier_8_sas_sata_atx_v1.scad   # v1 originale (archivée, cf. audit docs/audit-v1.md)
-  boitier_8_sas_v2.scad            # v2.4 courante (monoblocs, Ruthex, Add2PSU)
+  boitier_8_sas_v2.scad            # v2.5 courante (monoblocs, Ruthex, Add2PSU)
 docs/
   audit-v1.md                      # audit de la v1 (conflits trouvés)
   conformite.md                    # tableau besoin ↔ mesure ↔ statut
@@ -101,7 +102,10 @@ Les 13 STL sont déjà exportés dans `stl/` (dimensions vérifiées).
 - **Plateau d'impression : 1 m²** → `bed_max = 1000` : tous les panneaux
   s'impriment **monoblocs** (plus de segmentation).
 - **Impression plate** : tous les panneaux s'impriment à plat (extrusion 4 mm,
-  lid/étagère 3.2 mm).
+  lid/étagère 3.2 mm). Les découpes débordent de 1 mm des faces (v2.5 :
+  anti z-fighting de l'aperçu F5) — sans effet sur la géométrie finale.
+  La face renforcée (collerettes grommets saillantes 1 mm) s'imprime vers le
+  haut, sans support.
 - **Assemblage par inserts Ruthex** : M4×8.1 dans les jetées d'angle (poches
   ⌀5.6 × 9.1), M3×5.7 dans les struts et supports fins — voir
   [docs/components/inserts-ruthex.md](docs/components/inserts-ruthex.md).

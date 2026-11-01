@@ -1,7 +1,13 @@
 # TODO — points à fignoler avant impression
 
-État v2.4 : structurelles (#1, #7, #8), grilles fines (#4), encoches (#5),
-ghosts (#6), fan_guard (#R2), vue éclatée + STL (#R3) → **faits**.
+État v2.5 : v2.4 (structurelles #1/#7/#8, grilles fines #4, encoches #5,
+ghosts #6, fan_guard #R2, vue éclatée + STL #R3) **+ anti z-fighting F5**
+(découpes débordantes, collerettes grommets saillantes 1 mm, ghosts +0.3)
+**+ corrections** : grille avant recalée (fop en coords locales, bug +4 mm,
+barreaux bouchant 2 vis fans), struts (pilote M4 borgne, placement −12),
+fraises M3 étagère côté dessus, fraisages M4 front/top côté extérieur,
+lid (encoches d'angle poteaux, trous M3 poteaux arrière, offset vis) →
+**faits**. STL régénérés (13 pièces, solides valides).
 
 ## Reportés (arbitrage propriétaire — plus tard)
 
@@ -41,6 +47,9 @@ ghosts (#6), fan_guard (#R2), vue éclatée + STL (#R3) → **faits**.
 ## Vérifications physiques (propriétaire)
 
 - [ ] **Add2PSU à la réception** : mesurer l'entraxe réel des 4 trous.
+- [ ] **Grommets SAS à la réception** : avec la collerette saillante 1 mm
+  (v2.5), le trou fait 5 mm d'épaisseur au lieu de 4 — vérifier que le
+  grommet ⌀36 clippe flush ; sinon réduire la collerette.
 - [ ] **Câbles SAS réels** : reach des queues 200 mm, division au ras du
   grommet (tower et DAS côte à côte).
 - [ ] **Visserie** : 6-32 × 1/4" ×16 (disques), M4 × 12 (~28), M3 × 6/8 (~30).
