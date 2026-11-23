@@ -1,7 +1,8 @@
-# Tableau de conformité — v2.6 (`scad/boitier_8_sas_v26.scad`)
+# Tableau de conformité — v2.7 (`scad/boitier_8_sas_v27.scad`)
 
-> Mis à jour pour la v2.6 sur les points corrigés par l'audit v2.5
-> ([audit-v25.md](audit-v25.md)).
+> Mis à jour pour la v2.7. Les collisions et la tenue des vis sont vérifiées
+> par `tools/check.sh` (72 tests CGAL, configurations par défaut et
+> `sas_ext` + `fan_iso`).
 
 Besoin ↔ mesure ↔ source ↔ statut. Valeurs "monde" du repère SCAD
 (X largeur 0..282, Y profondeur 0..360, Z hauteur 0..260).
@@ -16,7 +17,9 @@ Besoin ↔ mesure ↔ source ↔ statut. Valeurs "monde" du repère SCAD
 | Trou latéral #2 : 130.10 mm | screw_y = conn_y − 130.10 = **64.9** | SFF-8301 A8+A9 | ✅ |
 | Offset face PCB : 6.35 mm | screw_x = drive_x[i] + 6.35 | SFF-8301 A10 | ✅ |
 | Vis 6-32 UNC, pénétration 2.39..3.56 | plaque de cage ts = 3.2 à 0.3 mm des disques → 2.85 mm, trous ⌀3.9 | SFF-8301 Table 3-1 | ✅ |
-| Jeu X inter-disques | 6.5 mm (canaux d'air), joues latérales 9.05 mm | conception | ✅ |
+| Jeu X inter-disques | 6.5 mm (canaux d'air) ; canaux de bord 7.05 mm (paroi de joue 2.5 + piliers 9×10, v2.7) : 8 disques ventilés sur 2 faces | conception | ✅ |
+| Calage au montage | peignes h 5 × 10 sur l'étagère, jeu 0.3 par face (v2.7) | conception | ✅ |
+| Courant de démarrage | 2.9 A crête 12 V par disque ; ≥ 2 câbles SATA, démarrage échelonné à vérifier | manuel ES.3 / [cx430.md](components/cx430.md) | ⚠️ à vérifier à la mise en service |
 | Position cage | x 13.85..268.15, y 48..195, z 107.2..209.05 | — | ✅ |
 
 ## Alimentation (Corsair CX430, 150 × 86 × 140)
@@ -38,7 +41,8 @@ Besoin ↔ mesure ↔ source ↔ statut. Valeurs "monde" du repère SCAD
 | Redondance (1 fan HS → toujours de l'air) | 2 fans indépendants | avis conception | ✅ |
 | Flux forcé à travers les disques | fans → 7 canaux de 6.5 mm (cage fermée : joues + plaque + lèvre déflecteur) → plenum arrière | conception | ✅ |
 | Admission filtrable | grande grille avant (x 12..276, z 100..228) | conception | ✅ |
-| Évacuation | 2 rangées de 23 fentes arrière (z 106..126, 212..248) + 13 fentes du top + PSU | conception | ✅ |
+| Découplage fans | option `fan_iso` : joint TPU 1.5 + trous ⌀5.5 | conception | option |
+| Évacuation | 2 rangées de 23 fentes arrière (z 106..126, 212.35..243) + 13 fentes du top + PSU ; positions dérivées des paramètres (v2.7) | conception | ✅ |
 
 ## Câblage SAS (2 breakouts SFF-8643 → 4× SFF-8482, queues ~200 mm)
 
@@ -47,6 +51,8 @@ Besoin ↔ mesure ↔ source ↔ statut. Valeurs "monde" du repère SCAD
 | Passage des 2 câbles | 2 grommets ⌀36, panneau arrière x 78 / 205, z 158 | mesure queues | ✅ |
 | Reach des queues (200 mm) | division à l'intérieur (~50 mm du panneau), chute 161 mm vers connecteurs y=195 | mesure | ✅ |
 | Affectation | grommet gauche → disques 1-4, droit → 5-8 | conception | ✅ |
+| Maintien des connecteurs SFF-8482 | barrette `cable_bar` (y 235, z 140), 1 collier par disque | conception | ✅ |
+| Option câble externe | `sas_ext` : 2 fenêtres 15 × 90 pour équerres SFF-8644 → 8643 | gabarit à confirmer | ⚠️ option |
 | Alignement connecteurs | grommets z 158 vs connecteurs z ~115..131 : chute douce | — | ⚠️ à valider avec les câbles réels |
 
 ## Structure / impression
@@ -55,11 +61,13 @@ Besoin ↔ mesure ↔ source ↔ statut. Valeurs "monde" du repère SCAD
 |---|---|---|---|
 | Plateau 1 m² | bed_max = 1000, **panneaux monoblocs** (max 352×252) | propriétaire | ✅ |
 | Assemblage panneaux | inserts **Ruthex M4×8.1** (poches ⌀5.6×9.1) dans jetées d'angle 24×24 ; vis M4 × 12 | kit Ruthex (docs/components/inserts-ruthex.md) | ✅ |
-| Fixation étagère / plaque de cage / Add2PSU | inserts **M3×5.7** (⌀4.0) ×17 | kit Ruthex | ✅ |
+| Fixation étagère / plaque / Add2PSU / cornières / barrette | inserts **M3×5.7** (⌀4.0) ×33 | kit Ruthex | ✅ |
 | Vis disques | 6-32 × 1/4" à travers la plaque de cage 3.2 mm (pas d'insert : trous impériaux) | SFF-8301 | ✅ |
 | Encombrement total | 282 × 360 × 260 | — | ✅ |
+| Rigidité des panneaux | 7 cornières L 9×9×2.5 sur les arêtes horizontales, vis M3 à mi-longueur (v2.7) | conception | ✅ |
+| Matériau | PETG ou ASA (pas de PLA) | [impression.md](impression.md) | ✅ |
 | Accès disques | dépose du top puis de la plaque de cage (4 M3 + 16 vis 6-32) | conception | ✅ |
-| Étagère | struts 3×3, portée 117 mm → flèche ≈ 0.5 mm | calcul | ✅ |
+| Étagère | struts 3×3 (x 26/141/256), portée 115 mm → flèche ≈ 0.5 mm | calcul | ✅ |
 | Anti-vibration | logement patin ⌀20 sous les pieds ; rien côté disques | — | ⚠️ partiel (TODO) |
 
 ## Démarrage automatique (Add2PSU)

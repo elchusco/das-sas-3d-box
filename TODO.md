@@ -35,6 +35,30 @@ lid (encoches d'angle poteaux, trous M3 poteaux arrière, offset vis) →
   non traité.
 - [ ] **Anti-vibration disques** : non traité (patins sous les pieds seulement).
 
+## v2.7 — fiabilisation + outillage (`scad/boitier_8_sas_v27.scad`) ✅
+
+- [x] **A1** Joues ajourées (paroi 2.5 + piliers 9×10) : canal de 7 mm côté
+  extérieur des disques 1 et 8 (9 canaux au total)
+- [x] **A2** Peignes de calage sur l'étagère (2 rangées, h 5)
+- [x] **A3** Barrette serre-câbles `cable_bar` (y 235, z 140), vissée par les flancs
+- [x] **A4** 8 passants pour colliers dans le fond (câbles du CX430)
+- [x] **A5** Option `sas_ext` : fenêtres 15×90 pour équerres SFF-8644 (cote à confirmer à la commande)
+- [x] **A6** Courant de démarrage documenté (`docs/components/cx430.md`)
+- [x] **B1** 7 cornières `edge_rail_x/y` (arêtes horizontales sauf arrière-basse)
+- [x] **B2** Option `fan_iso` : joints TPU `fan_gasket`, trous ⌀5.5 (l'étagère recule de 1.5 mm)
+- [x] **B3** `docs/impression.md` (matériau, réglages, questions à l'imprimeur)
+- [x] **C** `tools/check.sh` (72 tests CGAL), `tools/build.sh`, constantes dérivées, STL v2.5 → `stl/v25/`
+- [x] **D** `docs/bom.md`, `docs/assemblage.md`, `tools/hdd-temp.sh`
+
+### Reste à vérifier (v2.7)
+
+- [ ] **Équerres SFF-8644** (si `sas_ext`) : cote réelle de la fenêtre et des pattes.
+- [ ] **Prises SATA du CX430** : nombre de câbles / prises (répartition 4 + 4 minimum).
+- [ ] **Démarrage échelonné** HBA330 : observer à la première mise sous tension.
+- [ ] **Rainures 4×4 extérieures** des arêtes : toujours non traitées (esthétique ;
+  les cornières sont intérieures).
+- [ ] **Anti-vibration disques** : peignes = calage, pas amortissement.
+
 ## Reportés (arbitrage propriétaire — plus tard)
 
 - [ ] **#R1 Grilles front** — barreaux intégrés conservés (reco validée) ;
@@ -83,14 +107,12 @@ lid (encoches d'angle poteaux, trous M3 poteaux arrière, offset vis) →
   grommet ⌀36 clippe flush ; sinon réduire la collerette.
 - [ ] **Câbles SAS réels** : reach des queues 200 mm, division au ras du
   grommet (tower et DAS côte à côte).
-- [ ] **Visserie v2.6** : 6-32 × 1/4" ×16 (disques), 6-32 × 3/8" ×4 (PSU),
-  M4 × 12 ×24 (poteaux, inserts M4 ×24) + ×9 (struts, autotaraudées),
-  M4 × 14 ×4 (pieds), M3 × 8 ×13 (étagère ×9, plaque ×4), M3 × 6 ×4 (Add2PSU) ;
-  inserts M3 ×17.
+- [ ] **Visserie** : liste à jour (v2.7) dans [docs/bom.md](docs/bom.md).
 - [ ] **Interrupteur secteur CX430** : actionnable via la découpe (face
   arrière PSU exposée) — vérifier au montage.
 - [ ] **Molex libre dans la tour** : repérer une prise Molex/SATA free du PSU
   Dell pour l'Add2PSU.
 - [ ] **Fans à commander** : 2× 120 mm PWM (Arctic P12 PWM PST ou Noctua
   NF-P12 redux-1700) ± contrôleur NA-FC1 (choix non figé, voir session).
-- [ ] **Documentation câblage** : affectation disques 1-8 ↔ ports HBA.
+- [ ] **Documentation câblage** : affectation disques 1-8 ↔ ports HBA
+  (`docs/cablage.md` à créer à la mise en service, cf. assemblage.md étape 17).
